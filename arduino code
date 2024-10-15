@@ -1,0 +1,39 @@
+#include <Servo.h>  // Library for controlling the motor/servo
+
+Servo dispenserMotor;  // Servo to simulate the medicine dispenser
+
+int buttonPin = 2;     // Pin where the button is connected
+int motorPin = 9;      // Pin where the motor/servo is connected
+int medicineStock = 5; // Initial stock of medicine
+
+void setup() {
+    Serial.begin(9600);        // Start serial communication for debugging
+    pinMode(buttonPin, INPUT); // Set the button pin as input
+    dispenserMotor.attach(motorPin); // Attach the motor to the motorPin
+    dispenserMotor.write(0);    // Start with motor in the resting position
+    
+    Serial.println("MedVendo is ready!");
+    Serial.println("Press the button to dispense medicine.");
+}
+
+void loop() {
+    int buttonState = digitalRead(buttonPin);  // Read the button state
+    
+    if (buttonState == HIGH && medicineStock > 0) {
+        dispenseMedicine();   // Call function to dispense medicine
+    } else if (medicineStock == 0) {
+        Serial.println("Out of stock! Restock required.");
+        delay(2000);  // Wait for 2 seconds before checking again
+    }
+}
+
+void dispenseMedicine() {
+    Serial.println("Dispensing medicine...");
+    dispenserMotor.write(90);   // Move motor to dispense position
+    delay(1000);                // Wait for 1 second (dispensing time)
+    dispenserMotor.write(0);    // Return motor to resting position
+    medicineStock--;            // Decrease the stock by 1
+    Serial.print("Stock remaining: ");
+    Serial.println(medicineStock);
+    delay(2000);                // Pause before allowing another dispense
+}
